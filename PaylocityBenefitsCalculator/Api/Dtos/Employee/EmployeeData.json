@@ -1,0 +1,23 @@
+[
+    {
+        "Id": 1,
+        "FirstName": "LeBron",
+        "LastName": "James",
+        "Salary": 75420.99,
+        "DateOfBirth": "1984-12-30T05:00:00.000Z"
+    },
+    {
+        "Id": 2,
+        "FirstName": "Ja",
+        "LastName": "Morant",
+        "Salary": 92365.22,
+        "DateOfBirth": "1999-08-10T05:00:00.000Z"
+    },
+    {
+        "Id": 3,
+        "FirstName": "Michael",
+        "LastName": "Jordan",
+        "Salary": 143211.12,
+        "DateOfBirth": "1963-02-17T05:00:00.000Z"
+    }
+]
