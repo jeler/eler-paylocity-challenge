@@ -1,4 +1,5 @@
-﻿using Api.Dtos.Dependent;
+﻿using System.Text.Json;
+using Api.Dtos.Dependent;
 using Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -20,6 +21,21 @@ public class DependentsController : ControllerBase
     [HttpGet("")]
     public async Task<ActionResult<ApiResponse<List<GetDependentDto>>>> GetAll()
     {
-        throw new NotImplementedException();
+        string text = await System.IO.File.ReadAllTextAsync(@"Dtos/Dependent/DependentData.json");
+        var response = JsonSerializer.Deserialize<List<GetDependentDto>>(text);
+         var result = new ApiResponse<List<GetDependentDto>>
+        {
+            Data = null,
+            Success = true
+        };
+        
+        if (response != null)
+        {
+            result.Data = response;
+        } else {
+            result.Success = false;
+        }
+
+        return result;
     }
 }
