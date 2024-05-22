@@ -21,11 +21,11 @@ public class Benefit {
 
     public decimal PaycheckAmountWithDeductions {get; set;}
 
-    public decimal PaycheckAmount {get; set;}
+    // public decimal NetPaycheckAmount {get; set;}
 
-    public decimal OlderDependentCharge {get; set;}
+    // public decimal OlderDependentCharge {get; set;}
 
-    public decimal SalarySurcharge {get; set;}
+    // public decimal SalarySurcharge {get; set;}
     // I am setting default amounts based on the prompt but the user can also pass in their own values
     public Benefit(GetEmployeeDto employee, decimal baseCost = 1000, decimal additionalPartnerCost =  1000, decimal dependentCost = 600, int salarySurcharge = 2, decimal olderDepsSurcharge = 200) {
         _baseCost = baseCost;
@@ -35,7 +35,7 @@ public class Benefit {
         _olderDepsSurcharge = olderDepsSurcharge;
         _employee = employee;
         PaycheckAmountWithDeductions = calculatePaycheckWithDeductions();
-        PaycheckAmount = Math.Round(_employee.Salary/26, 2);
+        // NetPaycheckAmount = Math.Round(_employee.Salary/26, 2);
     }
 
 
