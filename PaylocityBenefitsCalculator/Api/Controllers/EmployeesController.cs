@@ -71,9 +71,15 @@ public class EmployeesController : ControllerBase
         };
         try {
             var dbEmployee = await _companyRepository.GetEmployeeById(id);
-            var paycheck = new Benefit(dbEmployee);
-            result.Data = paycheck;
-            result.Success = true;
+            if(dbEmployee != null) {
+                var paycheck = new Benefit(dbEmployee);
+                result.Data = paycheck;
+            } else {
+                result.Data = null;
+                result.Success = true;
+                result.Message = $"Can not find employee with id = {id}";
+
+            }
         } catch(Exception e) {
             result.Success = false;
             // would sanitize this message so that database information would not be exposed
