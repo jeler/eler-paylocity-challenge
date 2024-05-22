@@ -14,7 +14,6 @@ public class DependentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<GetDependentDto>>> Get(int id)
     {
-        // type conflict with API Response
         string text = await System.IO.File.ReadAllTextAsync(@"Dtos/Dependent/DependentData.json");
         var response = JsonSerializer.Deserialize<List<GetDependentDto>>(text);
         var result = new ApiResponse<GetDependentDto>
@@ -23,7 +22,6 @@ public class DependentsController : ControllerBase
             Success = true
         };
         if(response != null) {
-            // GetDependentDto dependent = response.Where(x => x.Id == id);
             GetDependentDto dependent = response.Find(x => x.Id == id);
             result.Data = dependent;
             if(result.Data == null) {
