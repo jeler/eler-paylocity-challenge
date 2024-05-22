@@ -64,4 +64,6 @@ o dependents that are over 50 years old will incur an additional $200 per month
     - Would still have had the GetEmployeeDTO issue (e.g. whether i can edit it)
     - Getting a dependent by id is quite inefficient as all employees need to be fetched to loop through and find the correct dependent
         - This is why I wanted to separate the dependents from employees
+- Would DEFINITELY add tests for endpoints and the Benefits class
+    - Benefits class (aka Benefits Calculator class) would be prioritized
 
