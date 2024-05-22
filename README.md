@@ -23,3 +23,45 @@ problem. We’re looking to see your skills in all three tiers so the solution c
 to show our teams your abilities across the board.
 
 Requirements will be given separately.
+
+## Requirements
+
+Able to view employees and their dependents
+• An employee may only have 1 spouse or domestic partner (not both) 
+• An employee may have an unlimited number of children (1 to many)
+
+
+• Able to calculate and view a paycheck for an employee given the following rules:
+o    26 paychecks per year with deductions spread as evenly as possible on each paycheck
+o   employees have a base cost of $1,000 per month (for benefits)
+o   each dependent represents an additional $600 cost per month (for benefits)
+o   employees that make more than $80,000 per year will incur an additional 2% of their yearly salary in
+benefits costs
+o dependents that are over 50 years old will incur an additional $200 per month
+
+## Requirements (My summary)
+
+- Goal: Calculate/view paycheck (POST/GET)
+- Business Rules
+    - 1 spouse/domestic partner (NOT both)
+    - Unlimited children
+    - 26 paychecks/yr (deductions spread evenly)
+    - Base: $1000/month
+    - Dependent = $600/month (each dependent)
+    - 80,000+ salary 
+        - 2% of yearly salary in benefits
+    - Over 50 > $200 per month
+
+## My Notes / Thoughts
+
+- First approach: How to relate dependent to employee without having a JOIN table that would create the relationship between the 2?
+    - Solution I came up with: 
+        - Seperate data.json files for Dependents and Employees
+        - Added Dictionary for id mapping of employees to dependents
+        - Was not sure if could remove Dependents list from GetEmployeeDTO
+- Second Approach: in-memory database
+    - Thought I could create a JOIN table but, from the research i did, this is a limitation of an in-memory db 
+    - Would still have had the GetEmployeeDTO issue (e.g. whether i can edit it)
+    - Getting a dependent by id is quite inefficient as all employees need to be fetched to loop through and find the correct dependent
+        - This is why I wanted to separate the dependents from employees
+
