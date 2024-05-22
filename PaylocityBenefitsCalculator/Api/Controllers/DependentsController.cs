@@ -10,20 +10,23 @@ namespace Api.Controllers;
 [Route("api/v1/[controller]")]
 public class DependentsController : ControllerBase
 {
+    readonly ICompanyRepository _companyRepository;
+    public DependentsController(ICompanyRepository companyRepository)
+    {
+        _companyRepository = companyRepository;
+    }
     [SwaggerOperation(Summary = "Get dependent by id")]
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<GetDependentDto>>> Get(int id)
     {
-        string text = await System.IO.File.ReadAllTextAsync(@"Dtos/Dependent/DependentData.json");
-        var response = JsonSerializer.Deserialize<List<GetDependentDto>>(text);
+        var response = await _companyRepository.GetDependentById(id);
         var result = new ApiResponse<GetDependentDto>
         {
             Data = null,
             Success = true
         };
         if(response != null) {
-            GetDependentDto dependent = response.Find(x => x.Id == id);
-            result.Data = dependent;
+            result.Data = response;
             if(result.Data == null) {
                 result.Message = $"Can not find dependent with id = {id}";
             }
@@ -41,21 +44,20 @@ public class DependentsController : ControllerBase
     [HttpGet("")]
     public async Task<ActionResult<ApiResponse<List<GetDependentDto>>>> GetAll()
     {
-        string text = await System.IO.File.ReadAllTextAsync(@"Dtos/Dependent/DependentData.json");
-        var response = JsonSerializer.Deserialize<List<GetDependentDto>>(text);
         var result = new ApiResponse<List<GetDependentDto>>
         {
             Data = null,
             Success = true
         };
-        
-        if (response != null)
-        {
-            result.Data = response;
-        } else {
+        try {
+            var response = await _companyRepository.GetDependents();
+            if(response != null) {
+                result.Data = response;
+            }
+        } catch(Exception e) {
             result.Success = false;
+            result.Message = e.Message;
         }
-
         return result;
     }
 }
