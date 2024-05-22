@@ -32,33 +32,33 @@ public class CompanyRepository: ICompanyRepository
                             LastName = "Morant",
                             Salary = 92365.22m,
                             DateOfBirth = new DateTime(1999, 8, 10),
-                            // Dependents = new List<GetDependentDto> 
-                            // {
-                            //     new GetDependentDto 
-                            //     {
-                            //         Id = 1,
-                            //         FirstName = "Spouse",
-                            //         LastName = "Morant",
-                            //         Relationship = Relationship.Spouse,
-                            //         DateOfBirth = new DateTime(1998, 3, 3)
-                            //     },
-                            //     new GetDependentDto 
-                            //     {
-                            //         Id = 2,
-                            //         FirstName = "Child1",
-                            //         LastName = "Morant",
-                            //         Relationship = Relationship.Child,
-                            //         DateOfBirth = new DateTime(2020, 6, 23)
-                            //     },
-                            //     new GetDependentDto
-                            //     {
-                            //         Id = 3,
-                            //         FirstName = "Child2",
-                            //         LastName = "Morant",
-                            //         Relationship = Relationship.Child,
-                            //         DateOfBirth = new DateTime(2021, 5, 18)
-                            //     }
-                            // }
+                            Dependents = new List<GetDependentDto> 
+                            {
+                                new GetDependentDto 
+                                {
+                                    Id = 1,
+                                    FirstName = "Spouse",
+                                    LastName = "Morant",
+                                    Relationship = Relationship.Spouse,
+                                    DateOfBirth = new DateTime(1998, 3, 3)
+                                },
+                                new GetDependentDto 
+                                {
+                                    Id = 2,
+                                    FirstName = "Child1",
+                                    LastName = "Morant",
+                                    Relationship = Relationship.Child,
+                                    DateOfBirth = new DateTime(2020, 6, 23)
+                                },
+                                new GetDependentDto
+                                {
+                                    Id = 3,
+                                    FirstName = "Child2",
+                                    LastName = "Morant",
+                                    Relationship = Relationship.Child,
+                                    DateOfBirth = new DateTime(2021, 5, 18)
+                                }
+                            }
                         },
                         new GetEmployeeDto
                         {
@@ -67,75 +67,21 @@ public class CompanyRepository: ICompanyRepository
                             LastName = "Jordan",
                             Salary = 143211.12m,
                             DateOfBirth = new DateTime(1963, 2, 17),
-                            // Dependents = new List<GetDependentDto>
-                            // {
-                            //     new()
-                            //     {
-                            //         Id = 4,
-                            //         FirstName = "DP",
-                            //         LastName = "Jordan",
-                            //         Relationship = Relationship.DomesticPartner,
-                            //         DateOfBirth = new DateTime(1974, 1, 2)
-                            //     }
-                            // }
-                        }
-                    };
-
-                    var joinTableData = new List<CompanyContext.EmployeeDependent>
-                    {
-                        new() {
-                            EmployeeId = 1,
-                            DependentId = 1
-                        },
-                        new() {
-                            EmployeeId = 1,
-                            DependentId = 2
-                        },
-                        new() {
-                            EmployeeId = 1,
-                            DependentId = 3
-                        },
-                        new() {
-                            EmployeeId = 2,
-                            DependentId = 4
-                        },
-                        
-                    };
-
-                    var dependents = new List<GetDependentDto>
-                    {
-                        new() {
-                            Id = 1,
-                            FirstName = "Spouse",
-                            LastName = "Morant",
-                            Relationship = Relationship.Spouse,
-                            DateOfBirth = new DateTime(1999, 8, 10)
-                        },
-                        new() {
-                            Id = 2,
-                            FirstName = "Child1",
-                            LastName = "Morant",
-                            Relationship = Relationship.Child,
-                            DateOfBirth = new DateTime(1998, 3, 3)
-                        },
-                        new() {
-                            Id = 3,
-                            FirstName = "Child2",
-                            LastName = "Morant",
-                            Relationship = Relationship.Child,
-                            DateOfBirth = new DateTime(2020, 6, 23)
-                        },
-                        new() {
-                            Id = 4,
-                            FirstName = "DP",
-                            LastName = "Jordan",
-                            Relationship = Relationship.DomesticPartner,
-                            DateOfBirth = new DateTime(1974, 1, 2)
+                            Dependents = new List<GetDependentDto>
+                            {
+                                new GetDependentDto
+                                {
+                                    Id = 4,
+                                    FirstName = "DP",
+                                    LastName = "Jordan",
+                                    Relationship = Relationship.DomesticPartner,
+                                    DateOfBirth = new DateTime(1974, 1, 2)
+                                }
+                            }
                         }
                     };
                     context.Employees.AddRange(employees);
-                    context.Dependents.AddRange(dependents);
-                    context.EmployeeDependents.AddRange(joinTableData);
+                    // Tried to add a rna
                     context.SaveChangesAsync();
                 }
             }
@@ -145,8 +91,8 @@ public class CompanyRepository: ICompanyRepository
         {
             using (var context = new CompanyContext())
             {
-                var dependent = await context.Dependents
-                    .FindAsync(id);
+                var dependent = await context.Employees
+                    .SelectMany(e => e.Dependents).SingleAsync(d => d.Id == id);
                 return dependent;
             }
         }
@@ -155,7 +101,8 @@ public class CompanyRepository: ICompanyRepository
         {
             using (var context = new CompanyContext())
             {
-                var dependents = await context.Dependents
+                List<GetDependentDto> dependents = await context.Employees
+                    .SelectMany(e => e.Dependents)
                     .ToListAsync();
                 return dependents;
             }
@@ -176,7 +123,7 @@ public class CompanyRepository: ICompanyRepository
             using (var context = new CompanyContext())
             {
                 var list = await context.Employees
-                    // .Include(a => a.Dependents)
+                    .Include(a => a.Dependents)
                     .ToListAsync();
                     
                 return list;
