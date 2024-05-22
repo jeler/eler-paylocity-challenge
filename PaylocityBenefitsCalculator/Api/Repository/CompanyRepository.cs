@@ -81,7 +81,6 @@ public class CompanyRepository: ICompanyRepository
                         }
                     };
                     context.Employees.AddRange(employees);
-                    // Tried to add a rna
                     context.SaveChangesAsync();
                 }
             }
