@@ -6,17 +6,7 @@ namespace Api.Models;
 
 public class Benefit {
 
-    // I am setting default amounts based on the prompt but the user can also pass in their own values
-    public Benefit(GetEmployeeDto employee, decimal baseCost = 1000, decimal additionalPartnerCost =  1000, decimal dependentCost = 600, int salarySurcharge = 2, decimal olderDepsSurcharge = 200) {
-        _baseCost = baseCost;
-        _additionalPartnerCost = additionalPartnerCost;
-        _dependentCost = dependentCost;
-        _salarySurcharge = salarySurcharge;
-        _olderDepsSurcharge = olderDepsSurcharge;
-        _employee = employee;
-        PaycheckAmountWithDeductions = calculatePaycheckWithDeductions();
-        PaycheckAmount = Math.Round(_employee.Salary/26, 2);
-    }
+    // This class is doing a whole lot. In the future, i would split it up into a "Benefits" model and a "Benefits Calculator" one
 
     private decimal _baseCost {get; set;}
 
@@ -36,6 +26,17 @@ public class Benefit {
     public decimal OlderDependentCharge {get; set;}
 
     public decimal SalarySurcharge {get; set;}
+    // I am setting default amounts based on the prompt but the user can also pass in their own values
+    public Benefit(GetEmployeeDto employee, decimal baseCost = 1000, decimal additionalPartnerCost =  1000, decimal dependentCost = 600, int salarySurcharge = 2, decimal olderDepsSurcharge = 200) {
+        _baseCost = baseCost;
+        _additionalPartnerCost = additionalPartnerCost;
+        _dependentCost = dependentCost;
+        _salarySurcharge = salarySurcharge;
+        _olderDepsSurcharge = olderDepsSurcharge;
+        _employee = employee;
+        PaycheckAmountWithDeductions = calculatePaycheckWithDeductions();
+        PaycheckAmount = Math.Round(_employee.Salary/26, 2);
+    }
 
 
     private decimal calculatePaycheckWithDeductions() {
