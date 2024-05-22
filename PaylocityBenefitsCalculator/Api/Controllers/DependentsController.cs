@@ -19,22 +19,24 @@ public class DependentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<GetDependentDto>>> Get(int id)
     {
-        var response = await _companyRepository.GetDependentById(id);
         var result = new ApiResponse<GetDependentDto>
         {
             Data = null,
             Success = true
         };
-        if(response != null) {
-            result.Data = response;
-            if(result.Data == null) {
+        try {
+            var dependent = await _companyRepository.GetDependentById(id);
+            if(dependent != null) {
+                result.Data = dependent;
+            } else {
                 result.Message = $"Can not find dependent with id = {id}";
             }
         }
-        else {
+        catch (Exception ex) {
             result.Success = false;
+            result.Message = ex.Message;
         }
-
+        
         return result;
 
     }
