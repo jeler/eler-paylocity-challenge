@@ -29,10 +29,7 @@ public class DependentsController : ControllerBase
             var dependent = await _companyRepository.GetDependentById(id);
             if(dependent != null) {
                 result.Data = dependent;
-            } else {
-                result.Message = $"Can not find dependent with id = {id}";
-                return NotFound(result);
-            }
+            } 
             return Ok(result);
         }
         catch (Exception ex) {
@@ -40,7 +37,7 @@ public class DependentsController : ControllerBase
             result.Data = null;
             // would log this and not return anything specific to user
             // result.Message = ex.Message;
-            return BadRequest(result);
+            return NotFound(result);
         }
 
     }
