@@ -2,6 +2,7 @@
 using Api.Dtos.Dependent;
 using Api.Dtos.Employee;
 using Api.Models;
+using Apis.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -65,15 +66,16 @@ public class EmployeesController : ControllerBase
     // Returns employee paycheck 
     [SwaggerOperation(Summary = "Get Paycheck")]
     [HttpGet("paycheck/{id}")]
-    public async Task<ActionResult<ApiResponse<Benefit>>> GetPaycheck(int id) {
-        var result = new ApiResponse<Benefit>{
+    public async Task<ActionResult<ApiResponse<BenefitsCalculator>>> GetPaycheck(int id) {
+        var result = new ApiResponse<BenefitsCalculator>{
             Data = null,
             Success = true
         };
         try {
             var dbEmployee = await _companyRepository.GetEmployeeById(id);
             if(dbEmployee != null) {
-                var paycheck = new Benefit(dbEmployee);
+                // Not sure how much of this info we want to share with user
+                var paycheck = new BenefitsCalculator(dbEmployee);
                 result.Data = paycheck;
                 return Ok(result);
             } else {
