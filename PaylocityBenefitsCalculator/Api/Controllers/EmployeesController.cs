@@ -31,14 +31,15 @@ public class EmployeesController : ControllerBase
                 result.Data = employee;
             } else {
                 result.Message = $"Can not find employee with id = {id}";
+                return NotFound(result);
             }
+            return Ok(result);
         } catch(Exception e) {
             result.Success = false;
             // would sanitize this message so that database information would not be exposed
             result.Error = e.Message;
+            return BadRequest(result);
         }
-
-        return result;
     }
 
     [SwaggerOperation(Summary = "Get all employees")]
@@ -54,12 +55,12 @@ public class EmployeesController : ControllerBase
             var employees = await _companyRepository.GetEmployees();
             result.Data = employees;
             result.Success = true;
+            return Ok(result);
         } catch(Exception e) {
             result.Success = false;
             result.Message= e.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
-        return result;
     }
     // Returns employee paycheck 
     [SwaggerOperation(Summary = "Get Paycheck")]
@@ -74,18 +75,19 @@ public class EmployeesController : ControllerBase
             if(dbEmployee != null) {
                 var paycheck = new Benefit(dbEmployee);
                 result.Data = paycheck;
+                return Ok(result);
             } else {
                 result.Data = null;
                 result.Success = true;
                 result.Message = $"Can not find employee with id = {id}";
+                return NotFound(result);
 
             }
         } catch(Exception e) {
             result.Success = false;
             // would sanitize this message so that database information would not be exposed
             result.Error = e.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
-        return result;
     }
 }

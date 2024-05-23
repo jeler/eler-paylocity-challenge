@@ -21,23 +21,27 @@ public class DependentsController : ControllerBase
     {
         var result = new ApiResponse<GetDependentDto>
         {
-            Data = null,
             Success = true
         };
         try {
+            // when dependent = null, returning bad request instead of NotFound()
+            // Most likely has to do with FirstAsync method used instead of Find()
             var dependent = await _companyRepository.GetDependentById(id);
             if(dependent != null) {
                 result.Data = dependent;
             } else {
                 result.Message = $"Can not find dependent with id = {id}";
+                return NotFound(result);
             }
+            return Ok(result);
         }
         catch (Exception ex) {
             result.Success = false;
-            result.Message = ex.Message;
+            result.Data = null;
+            // would log this and not return anything specific to user
+            // result.Message = ex.Message;
+            return BadRequest(result);
         }
-        
-        return result;
 
     }
 
@@ -56,10 +60,11 @@ public class DependentsController : ControllerBase
             if(response != null) {
                 result.Data = response;
             }
+            return Ok(result);
         } catch(Exception e) {
             result.Success = false;
-            result.Message = e.Message;
+            // result.Message = e.Message;
+            return BadRequest(result);
         }
-        return result;
     }
 }
