@@ -98,6 +98,48 @@ public class EmployeeIntegrationTests : IntegrationTest
         };
         await response.ShouldReturn(HttpStatusCode.OK, employee);
     }
+
+    [Fact]
+    public async Task WhenAskedForEmployeeWithDeps_ShouldReturnCorrectEmployeeAndDeps() 
+    {
+        var response = await HttpClient.GetAsync("/api/v1/employees/2");
+        var employee = new GetEmployeeDto
+        {
+            Id = 2,
+            FirstName = "Ja",
+            LastName = "Morant",
+            Salary = 92365.22m,
+            DateOfBirth = new DateTime(1999, 8, 10),
+            Dependents = new List<GetDependentDto>
+            {
+                new()
+                {
+                    Id = 1,
+                    FirstName = "Spouse",
+                    LastName = "Morant",
+                    Relationship = Relationship.Spouse,
+                    DateOfBirth = new DateTime(1998, 3, 3)
+                },
+                new()
+                {
+                    Id = 2,
+                    FirstName = "Child1",
+                    LastName = "Morant",
+                    Relationship = Relationship.Child,
+                    DateOfBirth = new DateTime(2020, 6, 23)
+                },
+                new()
+                {
+                    Id = 3,
+                    FirstName = "Child2",
+                    LastName = "Morant",
+                    Relationship = Relationship.Child,
+                    DateOfBirth = new DateTime(2021, 5, 18)
+                }
+            }
+        };
+        await response.ShouldReturn(HttpStatusCode.OK, employee);
+    }
     
     [Fact]
     //task: make test pass
