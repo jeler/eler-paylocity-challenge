@@ -66,8 +66,8 @@ public class EmployeesController : ControllerBase
     // Returns employee paycheck 
     [SwaggerOperation(Summary = "Get Paycheck")]
     [HttpGet("paycheck/{id}")]
-    public async Task<ActionResult<ApiResponse<BenefitsCalculator>>> GetPaycheck(int id) {
-        var result = new ApiResponse<BenefitsCalculator>{
+    public async Task<ActionResult<ApiResponse<IBenefitsCalculator>>> GetPaycheck(int id) {
+        var result = new ApiResponse<IBenefitsCalculator>{
             Data = null,
             Success = true
         };

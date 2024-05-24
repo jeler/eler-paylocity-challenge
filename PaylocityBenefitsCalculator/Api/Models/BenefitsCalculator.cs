@@ -4,38 +4,70 @@ using Api.Models;
 
 namespace Apis.Models;
 
-public class BenefitsCalculator : Benefit {
+public class BenefitsCalculator : IBenefitsCalculator {
 
-    public GetEmployeeDto _employee { get; set; }
+    private GetEmployeeDto _employee { get; set; }
 
-    public decimal PaycheckAmountWithDeductions {get; set;}
+
+    // per pay period net pay with deductions
+    public decimal NetPay {get; set;}
+    
+    // per pay period with no deductions
+    public decimal GrossPay {get; set;}
+
+    public decimal BaseCost {get; set;}
+
+    public decimal TotalPayPeriodDeductions {get; set;}
+
+    public decimal TotalAdditionalPartnerCost {get; set; }
+    public decimal TotalDependentCost {get; set;}
+    public decimal TotalSalarySurcharge {get; set;}
+    public decimal TotalOlderDepsSurcharge {get; set;}
+    public decimal TotalMonthlyDeductions {get; set;}
+    public decimal AdditionalPartnerCost { get; set; }
+    public decimal DependentCost { get; set; }
+    public decimal SalarySurcharge { get; set; }
+    public decimal OlderDepsSurcharge { get; set; }
 
     public BenefitsCalculator(GetEmployeeDto employee) {
+        Benefit b = new Benefit();
+        BaseCost = b.BaseCost;
+        AdditionalPartnerCost = b.AdditionalPartnerCost;
+        DependentCost = b.DependentCost;
+        SalarySurcharge = b.SalarySurcharge;
+
         _employee = employee;
-        PaycheckAmountWithDeductions = calculatePaycheckWithDeductions();
+        GrossPay = calculateGrossPaycheckPerPaycheck();
+        TotalDependentCost = calculalateChildDependentDeduction(_employee.Dependents.ToList());
+        TotalAdditionalPartnerCost = calculateAdditionalPartnerDeduction(_employee.Dependents.ToList());
+        TotalOlderDepsSurcharge = calculateOlderDepsDeduction(_employee.Dependents.ToList());
+        TotalPayPeriodDeductions = calculatePerPaycheckDeduction();
+        NetPay = calculatePaycheckWithDeductions();
+
     }
 
-    private decimal calculatePaycheckWithDeductions() {
-        decimal monthlyBenefitCost = calculateMonthlyBenefits();
+    public decimal calculatePaycheckWithDeductions() {
         // Salary surcharge not on a monthly basis which is why I separated it from the monthly benefit calculations
-        decimal salarySurcharge = calculateAdditionalSalaryCost(_employee.Salary);
-        // In the future, I would store these number variables instead of putting them here without context
-        decimal paycheckDeductions = ((monthlyBenefitCost * 12) + salarySurcharge)/26;
-        decimal finalPaycheckAmount = (_employee.Salary/26) - paycheckDeductions;
-        // I was waiting until the very end to round 
-        return Math.Round(finalPaycheckAmount, 2);
+        return Math.Round(GrossPay - TotalPayPeriodDeductions, 2);
     }
 
-    private decimal calculateMonthlyBenefits() {
-
-        // employee added
-        decimal dependantsCost = calculalateChildDependentCost(_employee.Dependents.ToList());
-        decimal additionalPartnerCost = calculateAdditionalPartnerCost(_employee.Dependents.ToList());
-        decimal olderDepsSurcharge = calculateOlderDeps(_employee.Dependents.ToList());
-        return BaseCost  + dependantsCost  + additionalPartnerCost + olderDepsSurcharge;
+    public decimal calculateTotalMonthlyDeductions() {
+        return BaseCost  + TotalDependentCost + TotalAdditionalPartnerCost + TotalOlderDepsSurcharge;
     }
 
-    public decimal calculalateChildDependentCost(List<GetDependentDto> dependents) {
+    public decimal calculateGrossPaycheckPerPaycheck() {
+        return Math.Round(_employee.Salary/26, 2);
+    }
+    
+    // Salary surcharge not on a monthly basis which is why I separated it from the monthly benefit calculations
+    public decimal calculatePerPaycheckDeduction() {
+        decimal totalMonthlyDeductons = calculateTotalMonthlyDeductions();
+        decimal totalPayPeriodDeductions = ((totalMonthlyDeductons * 12) + TotalSalarySurcharge)/26;
+        return Math.Round(totalPayPeriodDeductions, 2);
+    }
+
+    // individual calculations
+    public decimal calculalateChildDependentDeduction(List<GetDependentDto> dependents) {
         decimal childrenDepsCost = 0;
         var childrenDeps = dependents.Where(dep => dep.Relationship == Relationship.Child);
 
@@ -46,19 +78,19 @@ public class BenefitsCalculator : Benefit {
         return Math.Round(childrenDepsCost, 2);
     }
 
-    public decimal calculateAdditionalPartnerCost(List<GetDependentDto> dependents) {
+    public decimal calculateAdditionalPartnerDeduction(List<GetDependentDto> dependents) {
         // I am using .Any instead of .Where here to avoid the issue of including both domestic partner and spouse
         bool hasSpouseDomesticPartner = dependents.Any(dep => dep.Relationship == Relationship.Spouse || dep.Relationship == Relationship.DomesticPartner);
         return hasSpouseDomesticPartner ? AdditionalPartnerCost : 0;
     }
     
-    public decimal calculateAdditionalSalaryCost(decimal salary) {
+    public decimal calculateAdditionalSalaryDeduction(decimal salary) {
         decimal additionalCost = salary * SalarySurcharge/ 100;
         return salary > 80000 ? additionalCost: 0;
     }
 
     // would rather pass paramater as argument
-    public decimal calculateOlderDeps(List<GetDependentDto> dependents) {
+    public decimal calculateOlderDepsDeduction(List<GetDependentDto> dependents) {
         DateTime today = DateTime.Now;
         DateTime olderPersonAdditionalChargeDate = today.AddYears(-50);
         var olderDeps = dependents.Where(dep => dep.DateOfBirth > olderPersonAdditionalChargeDate);
