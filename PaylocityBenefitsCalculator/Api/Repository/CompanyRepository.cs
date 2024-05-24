@@ -111,8 +111,11 @@ public class CompanyRepository: ICompanyRepository
         {
             using (var context = new CompanyContext())
             {
+                // var employee = await context.Employees.FindAsync(id);
+                // employee.Dependents = employee.Dependents.Where(employee.Id == id)
                 var employee = await context.Employees
-                    .FindAsync(id);
+                .Include(e => e.Dependents)
+                .SingleOrDefaultAsync(d => d.Id == id);
                 return employee;
             }
         }
