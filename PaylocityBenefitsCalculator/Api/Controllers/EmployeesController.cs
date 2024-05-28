@@ -75,9 +75,13 @@ public class EmployeesController : ControllerBase
             Success = true
         };
         try {
+            // could have this object already if send from backend 
             var dbEmployee = await _companyRepository.GetEmployeeById(id);
             if(dbEmployee != null) {
                 // Not sure how much of this info we want to share with user
+                // injected the benefits calculator into controller and would return methods 
+                // Would return paycheck object
+                // consumer of calculator would not have access to variables
                 var paycheck = new BenefitsCalculator(dbEmployee);
                 result.Data = paycheck;
                 return Ok(result);

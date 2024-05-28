@@ -3,7 +3,13 @@ using Api.Dtos.Employee;
 using Api.Models;
 
 namespace Apis.Models;
+// design teir => C-tier suite get better benefits
 
+// don't have older dependents or not extra 
+
+// configuration outside of runtime 
+// dot env file?
+// config from database
 public class BenefitsCalculator : IBenefitsCalculator {
 
     private GetEmployeeDto _employee { get; set; }
@@ -28,8 +34,11 @@ public class BenefitsCalculator : IBenefitsCalculator {
     public decimal DependentCost { get; set; }
     public decimal SalarySurcharge { get; set; }
     public decimal OlderDepsSurcharge { get; set; }
+    public decimal SalaryCap { get; set; }
 
     public BenefitsCalculator(GetEmployeeDto employee) {
+        // benefit is a dependency
+        // unit tests would provide different benefit setups 
         Benefit b = new Benefit();
         BaseCost = b.BaseCost;
         AdditionalPartnerCost = b.AdditionalPartnerCost;
@@ -84,6 +93,8 @@ public class BenefitsCalculator : IBenefitsCalculator {
         return hasSpouseDomesticPartner ? AdditionalPartnerCost : 0;
     }
     
+
+    // configurable or changes yearly 
     public decimal calculateAdditionalSalaryDeduction(decimal salary) {
         decimal additionalCost = salary * SalarySurcharge/ 100;
         return salary > 80000 ? additionalCost: 0;
