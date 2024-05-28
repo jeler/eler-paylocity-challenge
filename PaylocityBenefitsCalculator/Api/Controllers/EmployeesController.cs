@@ -36,6 +36,7 @@ public class EmployeesController : ControllerBase
             }
             return Ok(result);
         } catch(Exception e) {
+        
             result.Success = false;
             // would sanitize this message so that database information would not be exposed
             result.Error = e.Message;
@@ -59,11 +60,13 @@ public class EmployeesController : ControllerBase
             return Ok(result);
         } catch(Exception e) {
             result.Success = false;
+            // will return SQL so want mapping here to an appropriate user response
             result.Message= e.Message;
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
     // Returns employee paycheck 
+    // makes it seem like a paycheck id and not an employee id 
     [SwaggerOperation(Summary = "Get Paycheck")]
     [HttpGet("paycheck/{id}")]
     public async Task<ActionResult<ApiResponse<IBenefitsCalculator>>> GetPaycheck(int id) {
