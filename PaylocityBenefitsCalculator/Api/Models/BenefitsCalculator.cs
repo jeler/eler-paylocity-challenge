@@ -34,7 +34,7 @@ public class BenefitsCalculator : IBenefitsCalculator {
     public decimal DependentCost { get; set; }
     public decimal SalarySurcharge { get; set; }
     public decimal OlderDepsSurcharge { get; set; }
-    public decimal SalaryCap { get; set; }
+    public decimal SalaryCap { get; set;}
 
     public BenefitsCalculator(GetEmployeeDto employee) {
         // benefit is a dependency
@@ -44,6 +44,7 @@ public class BenefitsCalculator : IBenefitsCalculator {
         AdditionalPartnerCost = b.AdditionalPartnerCost;
         DependentCost = b.DependentCost;
         SalarySurcharge = b.SalarySurcharge;
+        SalaryCap = b.SalaryCap;
 
         _employee = employee;
         GrossPay = calculateGrossPaycheckPerPaycheck();

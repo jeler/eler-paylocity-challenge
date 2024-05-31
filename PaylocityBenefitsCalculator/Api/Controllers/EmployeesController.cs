@@ -13,9 +13,13 @@ namespace Api.Controllers;
 public class EmployeesController : ControllerBase
 {
     readonly ICompanyRepository _companyRepository;
-    public EmployeesController(ICompanyRepository companyRepository)
+
+    // private IBenefitsCalculatorService _benefitsCalculator;
+    public IBenefitsCalculatorService _benefitsCalculatorService;
+    public EmployeesController(ICompanyRepository companyRepository, IBenefitsCalculatorService benefitsCalculator)
     {
         _companyRepository = companyRepository;
+        _benefitsCalculatorService = benefitsCalculator;
     }
     [SwaggerOperation(Summary = "Get employee by id")]
     [HttpGet("{id}")]
@@ -82,7 +86,8 @@ public class EmployeesController : ControllerBase
                 // injected the benefits calculator into controller and would return methods 
                 // Would return paycheck object
                 // consumer of calculator would not have access to variables
-                var paycheck = new BenefitsCalculator(dbEmployee);
+                // var paycheck = new BenefitsCalculator(dbEmployee);
+                var paycheck = _benefitsCalculatorService(dbEmployee).;
                 result.Data = paycheck;
                 return Ok(result);
             } else {
