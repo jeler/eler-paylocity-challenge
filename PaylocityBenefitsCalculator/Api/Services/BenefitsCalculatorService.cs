@@ -24,13 +24,21 @@ public interface IBenefitsCalculatorService
     // per pay period with no deductions
     public decimal GrossPay {get; set;}
 
+    public decimal TotalAdditionalPartnerCost {get; set; }
+    public decimal TotalDependentCost {get; set;}
+    public decimal TotalSalarySurcharge {get; set;}
+    public decimal TotalOlderDepsSurcharge {get; set;}
+}
+
+public interface IResponseCalculator {
+     public decimal NetPay {get; set;}
+    
+    // per pay period with no deductions
+    public decimal GrossPay {get; set;}
+
     public GetEmployeeDto _employee { get; set; }
 
-    public decimal calculateNetPaycheck(GetEmployeeDto _employee);
-    
-
-
-    // public decimal TotalPayPeriodDeductions {get; set;}
+    public decimal generatePayload(GetEmployeeDto _employee);
 
     public decimal TotalAdditionalPartnerCost {get; set; }
     public decimal TotalDependentCost {get; set;}
@@ -59,7 +67,7 @@ class BenefitsCalculatorService: IBenefitsCalculatorService
     public decimal NetPay { get; set; }
     public decimal GrossPay { get; set; }
 
-    public BenefitsCalculatorService(GetEmployeeDto employee)
+    public BenefitsCalculatorService()
     {
         Benefit b = new Benefit();
         BaseCost = b.BaseCost;
@@ -67,12 +75,16 @@ class BenefitsCalculatorService: IBenefitsCalculatorService
         DependentCost = b.DependentCost;
         SalarySurcharge = b.SalarySurcharge;
         SalaryCap = b.SalaryCap;
-        _employee = employee;
+    }
 
-        TotalAdditionalPartnerCost = calculateAdditionalPartnerDeduction(_employee.Dependents);
-        TotalDependentCost = calculalateChildDependentDeduction(_employee.Dependents);
-        TotalSalarySurcharge = calculateAdditionalSalaryDeduction(_employee.Salary);
-        TotalOlderDepsSurcharge = calculateOlderDepsDeduction(_employee.Dependents);
+    public IBenefitsCalculatorService generatePayload(GetEmployeeDto _employee) {
+        return new IBenefitsCalculatorService{
+            GrossPay = calculateGrossPaycheckPerPaycheck(),
+            TotalDependentCost = calculalateChildDependentDeduction(_employee.Dependents.ToList()),
+            TotalAdditionalPartnerCost = calculateAdditionalPartnerDeduction(_employee.Dependents.ToList()),
+            TotalOlderDepsSurcharge = calculateOlderDepsDeduction(_employee.Dependents.ToList()),
+            TotalPayPeriodDeductions = calculatePerPaycheckDeduction(),
+            NetPay = calculatePaycheckWithDeductions()};
     }
 
 

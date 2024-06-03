@@ -87,7 +87,7 @@ public class EmployeesController : ControllerBase
                 // Would return paycheck object
                 // consumer of calculator would not have access to variables
                 // var paycheck = new BenefitsCalculator(dbEmployee);
-                var paycheck = _benefitsCalculatorService(dbEmployee).;
+                var paycheck = _benefitsCalculatorService.generatePayload(dbEmployee);
                 result.Data = paycheck;
                 return Ok(result);
             } else {
