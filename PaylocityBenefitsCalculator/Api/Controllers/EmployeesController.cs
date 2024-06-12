@@ -1,8 +1,5 @@
-﻿using System.Text.Json;
-using Api.Dtos.Dependent;
-using Api.Dtos.Employee;
+﻿using Api.Dtos.Employee;
 using Api.Models;
-using Apis.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -14,7 +11,6 @@ public class EmployeesController : ControllerBase
 {
     readonly ICompanyRepository _companyRepository;
 
-    // private IBenefitsCalculatorService _benefitsCalculator;
     public IBenefitsCalculatorService _benefitsCalculatorService;
     public EmployeesController(ICompanyRepository companyRepository, IBenefitsCalculatorService benefitsCalculator)
     {
@@ -72,28 +68,23 @@ public class EmployeesController : ControllerBase
     // Returns employee paycheck 
     // makes it seem like a paycheck id and not an employee id 
     [SwaggerOperation(Summary = "Get Paycheck")]
-    [HttpGet("paycheck/{id}")]
-    public async Task<ActionResult<ApiResponse<IBenefitsCalculator>>> GetPaycheck(int id) {
-        var result = new ApiResponse<IBenefitsCalculator>{
+    [HttpGet("paycheck/{employee_id}")]
+    public async Task<ActionResult<ApiResponse<BenefitResponse>>> GetPaycheck(int employee_id) {
+        var result = new ApiResponse<BenefitResponse>{
             Data = null,
             Success = true
         };
         try {
             // could have this object already if send from backend 
-            var dbEmployee = await _companyRepository.GetEmployeeById(id);
+            var dbEmployee = await _companyRepository.GetEmployeeById(employee_id);
             if(dbEmployee != null) {
-                // Not sure how much of this info we want to share with user
-                // injected the benefits calculator into controller and would return methods 
-                // Would return paycheck object
-                // consumer of calculator would not have access to variables
-                // var paycheck = new BenefitsCalculator(dbEmployee);
-                var paycheck = _benefitsCalculatorService.generatePayload(dbEmployee);
+                var paycheck = _benefitsCalculatorService.createBenefitsPackage(dbEmployee);
                 result.Data = paycheck;
                 return Ok(result);
             } else {
                 result.Data = null;
                 result.Success = true;
-                result.Message = $"Can not find employee with id = {id}";
+                result.Message = $"Can not find employee with id = {employee_id}";
                 return NotFound(result);
 
             }
